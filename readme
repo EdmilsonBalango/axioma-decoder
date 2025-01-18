@@ -16,3 +16,81 @@ The payload is structured as follows:
 | 10-11    | Battery Level        | Remaining battery life                    | 2                  | In percentage (multiplied by 10)       |
 | 12-15    | Timestamp            | Date and time of reading                  | 4                  | UNIX time format                       |
 | 16+      | Optional Data Fields | Additional fields as per configuration    | Variable           | E.g., flow rate, firmware version      |
+
+## Example Payload Decoding
+Given the example payload:
+
+```
+tw2KZxBJBQAAAC2JZ0kFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+```
+
+### Steps to Decode
+1. **Base64 Decode**:
+   - Convert the Base64 payload into binary data.
+
+2. **Convert Binary Data to Byte Array**:
+   - Transform the binary data into an array of bytes for easier parsing.
+
+3. **Parse Fields**:
+   - Extract and interpret each field based on the table above.
+
+### Decoding Example in JavaScript
+Below is an example script to decode the payload:
+
+```javascript
+// Payload to decode
+const payload = "tw2KZxBJBQAAAC2JZ0kFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+
+// Step 1: Decode Base64 to Binary
+const binaryData = Buffer.from(payload, 'base64');
+
+// Step 2: Convert Binary Data to a Byte Array
+const byteArray = Array.from(binaryData);
+
+// Step 3: Parse the Byte Array
+const decodedData = {
+  header: byteArray.slice(0, 2).map(b => b.toString(16)).join(''), // Convert header bytes to hex
+  messageType: byteArray[2], // Message type (1 byte)
+  volume: (byteArray[3] << 24) | (byteArray[4] << 16) | (byteArray[5] << 8) | byteArray[6], // Combine 4 bytes into integer
+  temperature: ((byteArray[7] << 8) | byteArray[8]) / 10, // Combine 2 bytes and divide by 10
+  alarmFlags: byteArray[9].toString(2).padStart(8, '0'), // Convert to binary string for bit flags
+  batteryLevel: ((byteArray[10] << 8) | byteArray[11]) / 10, // Combine 2 bytes and divide by 10
+  timestamp: new Date(((byteArray[12] << 24) | (byteArray[13] << 16) | (byteArray[14] << 8) | byteArray[15]) * 1000).toISOString() // Convert 4 bytes to UNIX timestamp
+};
+
+// Log decoded data
+console.log(decodedData);
+```
+
+### Example Output
+The decoded output might look like this:
+
+```json
+{
+  "header": "bdb6",
+  "messageType": 2,
+  "volume": 12345678,
+  "temperature": 24.3,
+  "alarmFlags": "00000001",
+  "batteryLevel": 95.5,
+  "timestamp": "2025-01-15T12:34:56.000Z"
+}
+```
+
+## Notes
+- **Header**: Identifies the meter or message type.
+- **Message Type**: Indicates the nature of the message (e.g., reading, alarm).
+- **Volume**: Water consumption data.
+- **Temperature**: Precise water temperature measurement.
+- **Alarm Flags**: Encodes alarms like tampering, leakage, or reverse flow.
+- **Battery Level**: Useful for tracking device health.
+- **Timestamp**: Time of reading, crucial for historical analysis.
+
+## Additional Resources
+For more information, refer to:
+- "Axioma LoRa Payload W1 V01.8 Extended" documentation.
+- Official Axioma Metering website: [https://www.axiomametering.com](https://www.axiomametering.com)
+
+---
+This document serves as a quick guide for decoding Qalcosonic W1 LoRaWAN payloads and interpreting the data effectively.
+
