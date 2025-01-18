@@ -27,30 +27,29 @@ function Decode(fPort, bytes, variables) {
     }
 
     function decodeDeltaVolume(startIndex) {
-        const rawValue = (bytes[startIndex] | (bytes[startIndex + 1] << 8));
+        var rawValue = (bytes[startIndex] | (bytes[startIndex + 1] << 8));
         return rawValue / 1000;
     }
 
     // Decoding the Base64 payload 
     function decodePayloadFromBase64() {
-
-        const decoded = {};
+        var decoded = {};
         decoded.currentDateTime = decodeTimestamp(0);
         decoded.statusCode = bytes[4];
         decoded.currentVolume = decodeVolume(5);
         decoded.logDateTime = decodeTimestamp(9);
         decoded.logVolume = decodeVolume(13);
         decoded.deltaVolumes = [];
-        for (let i = 17, j = 1; j <= 15; i += 2, j++) {
+        for (var i = 17, j = 1; j <= 15; i += 2, j++) {
             decoded.deltaVolumes.push(decodeDeltaVolume(i));
         }
         return decoded;
     }
 
     //decode alerts from port 103
-    function alertsDecoded(){
-        // const bytes = base64ToBytes(base64Payload);
-        const decoded = {}
+    function alertsDecoded() {
+        // var bytes = base64ToBytes(base64Payload);
+        var decoded = {};
         decoded.type = "Alert";
         decoded.currentDateTime = decodeTimestamp(0);
 

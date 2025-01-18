@@ -1,0 +1,18 @@
+# Qalcosonic W1 LoRaWAN Payload Decoder
+
+## Overview
+This document provides the payload structure and steps to decode the data transmitted by the Qalcosonic W1 water meter using the LoRaWAN communication protocol. The payload contains various fields for meter readings, alarm flags, and system status.
+
+## Payload Structure
+The payload is structured as follows:
+
+| **Byte** | **Field Name**       | **Description**                           | **Length (Bytes)** | **Notes**                               |
+|----------|----------------------|-------------------------------------------|--------------------|-----------------------------------------|
+| 0-1      | Header               | Device ID or Message Header               | 2                  | Unique ID of the meter or data type    |
+| 2        | Message Type         | Type of message (e.g., consumption, alert)| 1                  | 0x01 for consumption, 0x02 for alarms  |
+| 3-6      | Volume               | Measured water volume                     | 4                  | In cubic meters, as an integer value   |
+| 7-8      | Temperature          | Water temperature                         | 2                  | In °C (multiplied by 10 for precision) |
+| 9        | Alarm Flags          | Alarm status flags                        | 1                  | Encoded alarm information              |
+| 10-11    | Battery Level        | Remaining battery life                    | 2                  | In percentage (multiplied by 10)       |
+| 12-15    | Timestamp            | Date and time of reading                  | 4                  | UNIX time format                       |
+| 16+      | Optional Data Fields | Additional fields as per configuration    | Variable           | E.g., flow rate, firmware version      |
