@@ -1,14 +1,19 @@
-const express = require('express')
+const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors')
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
 
 const hostname = '127.0.0.1';
 const port = process.env.PORT || 3001;
-const app = express()
+const app = express();
 
-app.use(cors())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: false}))
+// Middleware
+app.use(helmet()); // Security headers
+app.use(cors()); // Enable CORS
+app.use(bodyParser.json()); // Parse JSON bodies
+app.use(bodyParser.urlencoded({ extended: false })); // Parse URL-encoded bodies
+app.use(morgan('combined')); // Logging
 
 function Decode(fPort, bytes, variables) {
 
@@ -166,8 +171,8 @@ function Decode101(){
 app.get('/', (req, res) => {
     var payload = req.body.data
     var lora_port = req.body.fPort
-    res.status(200).json({server: Decode(lora_port,payload)})
-    // res.status(200).json({server: Decode101()})
+    // res.status(200).json({server: Decode(lora_port,payload)})
+    res.status(200).json({server: 'all ok'})
 })
 
 app.listen(port, hostname, () => {
