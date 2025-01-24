@@ -171,8 +171,8 @@ function Decode101(){
 app.get('/', (req, res) => {
     var payload = req.body.data
     var lora_port = req.body.fPort
-    // res.status(200).json({server: Decode(lora_port,payload)})
-    res.status(200).json({server: 'all ok'})
+    res.status(200).json({server: Decode(lora_port,payload)})
+    // res.status(200).json({server: 'all ok'})
 })
 
 app.listen(port, hostname, () => {
