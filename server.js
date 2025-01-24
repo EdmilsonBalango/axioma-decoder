@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-const hostname = process.env.HOSTNAME || '127.0.0.1';
+const hostname = process.env.HOSTNAME || '0.0.0.0';
 const port = process.env.PORT || 3001;
 const app = express();
 
